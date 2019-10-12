@@ -1,9 +1,11 @@
 #include "Console.h"
+#include "GlobalHotKey.h"
 
 int main()
 {
-	Console console;
+	EnableGlobalHotKey();
 
+	Console console;
 	console.Run();
 
 	return 0;

@@ -125,11 +125,13 @@
   <ItemGroup>
     <ClCompile Include="Source\Command.cpp" />
     <ClCompile Include="Source\Console.cpp" />
+    <ClCompile Include="Source\GlobalHotKey.cpp" />
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Command.h" />
     <ClInclude Include="Source\Console.h" />
+    <ClInclude Include="Source\GlobalHotKey.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
