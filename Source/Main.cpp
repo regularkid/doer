@@ -1,14 +1,10 @@
-#include <iostream>
+#include "Console.h"
 
 int main()
 {
-	while (1)
-	{
-		std::cout << "> ";
+	Console console;
 
-		std::string command;
-		std::cin >> command;
-	}
+	console.Run();
 
 	return 0;
 }
