@@ -11,6 +11,9 @@ public:
 	void Run();
 
 private:
+	int GetCursorPosX() const;
+	int GetCursorPosY() const;
+	void SetCursorPos(int x, int y);
 
 	std::unordered_map<std::string, Command> m_commands;
 };
