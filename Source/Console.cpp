@@ -18,6 +18,8 @@ Console::Console()
 	// No auto echo to std out
 	SetConsoleMode(m_stdIn, 0);
 
+	DisplayTitle();
+
 	// Initialize output (ProcessInput is blocking if no input pressed, so
 	// UpdateOutput inside ::Run may not be called until user enters something
 	UpdateOutput();
@@ -30,6 +32,17 @@ void Console::Run()
 		ProcessInput();
 		UpdateOutput();
 	}
+}
+
+void Console::DisplayTitle()
+{
+	std::cout << " ____   __  ____  ____   " << std::endl;
+	std::cout << "(    \\ /  \\(  __)(  _ \\  " << std::endl;
+	std::cout << " ) D ((  O )) _)  )   /  " << std::endl;
+	std::cout << "(____/ \\__/(____)(__\\_)  " << std::endl;
+	std::cout << std::endl;
+	std::cout << "Copyright Bryan Perfetto 2019" << std::endl;
+	std::cout << std::endl;
 }
 
 void Console::ProcessInput()

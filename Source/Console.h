@@ -12,6 +12,7 @@ public:
 	void Run();
 
 private:
+	void DisplayTitle();
 	void ProcessInput();
 	void UpdateOutput();
 
