@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Command
 {
 public:
@@ -9,6 +11,8 @@ public:
 	{}
 
 	virtual void Run();
+
+	const std::string& GetName() const;
 
 private:
 	std::string m_name;

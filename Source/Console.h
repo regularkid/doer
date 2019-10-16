@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include <unordered_map>
+#include <vector>
 #include "Command.h"
 
 class Console
@@ -21,9 +21,15 @@ private:
 	void SetCursorPos(int x, int y);
 	bool CurLineHasMaxCharacters() const;
 
+	void ResetAutoComplete();
+	void SetNextAutoCompleteOption();
+
 	std::string m_prompt = "> ";
 	std::string m_curInput;
-	std::unordered_map<std::string, Command> m_commands;
+	std::vector<Command> m_commands;
+
+	std::string m_autoCompleteInput;
+	unsigned int m_autoCompleteIdx = -1;
 
 	HANDLE m_stdIn = NULL;
 	HANDLE m_stdOut = NULL;

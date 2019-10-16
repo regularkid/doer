@@ -1,15 +1,26 @@
 #include <iostream>
+#include <algorithm>
 #include "Console.h"
 
 Console::Console()
 {
-	m_commands.insert({ "test", Command("test") });
+	m_commands.emplace_back("test");
+	m_commands.emplace_back("test2");
+	m_commands.emplace_back("blah");
+	m_commands.emplace_back("log");
+	std::sort(m_commands.begin(), m_commands.end(), [](const Command& a, const Command& b) {
+		return a.GetName() < b.GetName();
+	});
 
 	m_stdIn = GetStdHandle(STD_INPUT_HANDLE);
 	m_stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	// No auto echo to std out
 	SetConsoleMode(m_stdIn, 0);
+
+	// Initialize output (ProcessInput is blocking if no input pressed, so
+	// UpdateOutput inside ::Run may not be called until user enters something
+	UpdateOutput();
 }
 
 void Console::Run()
@@ -33,27 +44,34 @@ void Console::ProcessInput()
 		WORD virtualKey = inputRead.Event.KeyEvent.wVirtualKeyCode;
 		switch (virtualKey)
 		{
-			// Enter
+			// Process command
 			case VK_RETURN:
 			{
 				SetCursorPos(0, GetCursorPosY() + 1);
 				m_curInput.clear();
 			} break;
 
-			// Backspace
+			// Delete character
 			case VK_BACK:
 			{
 				if (!m_curInput.empty())
 				{
 					m_curInput.pop_back();
+					ResetAutoComplete();
 				}
 			} break;
 
-			// Escape
+			// Clear
 			case VK_ESCAPE:
 			{
-				SetCursorPos(0, GetCursorPosY());
 				m_curInput.clear();
+				ResetAutoComplete();
+			} break;
+
+			// Auto-complete
+			case VK_TAB:
+			{
+				SetNextAutoCompleteOption();
 			} break;
 
 			// Normal character
@@ -63,6 +81,7 @@ void Console::ProcessInput()
 				if (asciiKey != 0 && !CurLineHasMaxCharacters())
 				{
 					m_curInput += asciiKey;
+					ResetAutoComplete();
 				}
 			}
 		}
@@ -119,4 +138,33 @@ bool Console::CurLineHasMaxCharacters() const
 	const int maxCharacters = GetCursorMaxX() - 1;
 	const int numCharacters = static_cast<int>(m_prompt.size()) + static_cast<int>(m_curInput.size());
 	return numCharacters >= maxCharacters;
+}
+
+void Console::ResetAutoComplete()
+{
+	m_autoCompleteInput = m_curInput;
+	m_autoCompleteIdx = -1;
+}
+
+void Console::SetNextAutoCompleteOption()
+{
+	if (m_autoCompleteInput.empty())
+	{
+		return;
+	}
+
+	// Find command (if any) matching the currently entered input starting
+	// from the current auto complete command index (with wrap around)
+	int numCommandsToCheck = m_commands.size();
+	while (numCommandsToCheck-- > 0)
+	{
+		m_autoCompleteIdx = (m_autoCompleteIdx + 1) % m_commands.size();
+
+		const std::string& commandName = m_commands[m_autoCompleteIdx].GetName();
+		if (commandName.find(m_autoCompleteInput) == 0)
+		{
+			m_curInput = m_commands[m_autoCompleteIdx].GetName();
+			break;
+		}
+	}
 }
