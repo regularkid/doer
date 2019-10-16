@@ -61,11 +61,13 @@ void Console::ProcessInput()
 				}
 			} break;
 
-			// Clear
+			// Clear / Hide
 			case VK_ESCAPE:
 			{
 				m_curInput.clear();
 				ResetAutoComplete();
+
+				ShowWindow(GetConsoleWindow(), SW_HIDE);
 			} break;
 
 			// Auto-complete
