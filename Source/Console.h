@@ -12,6 +12,8 @@ public:
 	void Run();
 
 private:
+	void LoadCommands();
+
 	void DisplayTitle();
 	void ProcessInput();
 	void UpdateOutput();

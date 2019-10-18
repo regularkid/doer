@@ -1,0 +1,6 @@
+command test2
+output hello world
+
+command log
+command test
+command blah

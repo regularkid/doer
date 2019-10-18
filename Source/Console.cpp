@@ -1,16 +1,13 @@
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <iterator>
 #include "Console.h"
 
 Console::Console()
 {
-	m_commands.emplace_back("test");
-	m_commands.emplace_back("test2");
-	m_commands.emplace_back("blah");
-	m_commands.emplace_back("log");
-	std::sort(m_commands.begin(), m_commands.end(), [](const Command& a, const Command& b) {
-		return a.GetName() < b.GetName();
-	});
+	LoadCommands();
 
 	m_stdIn = GetStdHandle(STD_INPUT_HANDLE);
 	m_stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -32,6 +29,45 @@ void Console::Run()
 		ProcessInput();
 		UpdateOutput();
 	}
+}
+
+void Console::LoadCommands()
+{
+	std::ifstream infile("commands.txt");
+
+	std::string line;
+	Command* curCommand = nullptr;
+	while (std::getline(infile, line))
+	{
+		if (line.empty())
+			continue;
+
+		std::transform(line.begin(), line.end(), line.begin(), std::tolower);
+
+		// New command
+		if (line.find("command") == 0)
+		{
+			std::string commandName = line.substr(8, std::string::npos);
+			if (std::find_if(m_commands.begin(), m_commands.end(),
+				[&commandName](const Command& c) { return c.GetName() == commandName; }) == m_commands.end())
+			{
+				m_commands.emplace_back(commandName);
+				curCommand = &m_commands.back();
+			}
+		}
+		// Add step to current command
+		else
+		{
+			if (curCommand)
+			{
+				curCommand->AddStep(line);
+			}
+		}
+	}
+
+	std::sort(m_commands.begin(), m_commands.end(), [](const Command& a, const Command& b) {
+		return a.GetName() < b.GetName();
+	});
 }
 
 void Console::DisplayTitle()
@@ -61,7 +97,17 @@ void Console::ProcessInput()
 			case VK_RETURN:
 			{
 				SetCursorPos(0, GetCursorPosY() + 1);
+				
+				auto itr = std::find_if(m_commands.begin(), m_commands.end(),
+					[&](const Command& c) { return c.GetName() == m_curInput; });
+				if (itr != m_commands.end())
+				{
+					Command& command = *itr;
+					command.Run();
+				}
+
 				m_curInput.clear();
+				std::cout << std::endl;
 			} break;
 
 			// Delete character
