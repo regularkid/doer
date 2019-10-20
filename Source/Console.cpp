@@ -1,14 +1,12 @@
-#include <iostream>
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
-#include <sstream>
+#include <iostream>
 #include <iterator>
 #include "Console.h"
 
 Console::Console()
 {
-	LoadCommands();
-
 	m_stdIn = GetStdHandle(STD_INPUT_HANDLE);
 	m_stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -16,6 +14,8 @@ Console::Console()
 	SetConsoleMode(m_stdIn, 0);
 
 	DisplayTitle();
+
+	LoadCommands();
 
 	// Initialize output (ProcessInput is blocking if no input pressed, so
 	// UpdateOutput inside ::Run may not be called until user enters something
@@ -33,41 +33,12 @@ void Console::Run()
 
 void Console::LoadCommands()
 {
-	std::ifstream infile("commands.txt");
-
-	std::string line;
-	Command* curCommand = nullptr;
-	while (std::getline(infile, line))
+	for (const auto& entry : std::experimental::filesystem::directory_iterator("commands"))
 	{
-		if (line.empty())
-			continue;
-
-		std::transform(line.begin(), line.end(), line.begin(), std::tolower);
-
-		// New command
-		if (line.find("command") == 0)
-		{
-			std::string commandName = line.substr(8, std::string::npos);
-			if (std::find_if(m_commands.begin(), m_commands.end(),
-				[&commandName](const Command& c) { return c.GetName() == commandName; }) == m_commands.end())
-			{
-				m_commands.emplace_back(commandName);
-				curCommand = &m_commands.back();
-			}
-		}
-		// Add step to current command
-		else
-		{
-			if (curCommand)
-			{
-				curCommand->AddStep(line);
-			}
-		}
+		m_commands.emplace_back(entry.path());
 	}
 
-	std::sort(m_commands.begin(), m_commands.end(), [](const Command& a, const Command& b) {
-		return a.GetName() < b.GetName();
-	});
+	std::cout << std::endl;
 }
 
 void Console::DisplayTitle()
@@ -203,8 +174,9 @@ bool Console::CurLineHasMaxCharacters() const
 
 void Console::ResetAutoComplete()
 {
-	m_autoCompleteInput = m_curInput;
 	m_autoCompleteIdx = -1;
+	m_autoCompleteInput = m_curInput;
+	std::transform(m_autoCompleteInput.begin(), m_autoCompleteInput.end(), m_autoCompleteInput.begin(), std::tolower);
 }
 
 void Console::SetNextAutoCompleteOption()

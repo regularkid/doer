@@ -33,6 +33,9 @@
     <ClCompile Include="Source\Steps\Step_Output.cpp">
       <Filter>Source Files\Steps</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Steps\Step_SysCommand.cpp">
+      <Filter>Source Files\Steps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Command.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="Source\Step.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Steps\Step_SysCommand.h">
+      <Filter>Source Files\Steps</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

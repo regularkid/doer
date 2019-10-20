@@ -1,17 +1,16 @@
 #pragma once
 
+#include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 #include "Step.h"
 
 class Command
 {
 public:
 	Command() = delete;
-	Command(const std::string& name)
-		: m_name(name)
-	{}
+	Command(const std::experimental::filesystem::path& path);
 
 	virtual void Run();
 
@@ -19,6 +18,9 @@ public:
 	void AddStep(const std::string& step);
 
 private:
+	void Load();
+
 	std::string m_name;
+	std::experimental::filesystem::path m_path;
 	std::vector<std::unique_ptr<Step>> m_steps;
 };

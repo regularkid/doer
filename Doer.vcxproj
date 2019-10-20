@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -115,6 +116,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +130,7 @@
     <ClCompile Include="Source\GlobalHotKey.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Steps\Step_Output.cpp" />
+    <ClCompile Include="Source\Steps\Step_SysCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Command.h" />
@@ -135,6 +138,7 @@
     <ClInclude Include="Source\GlobalHotKey.h" />
     <ClInclude Include="Source\Step.h" />
     <ClInclude Include="Source\Steps\Step_Output.h" />
+    <ClInclude Include="Source\Steps\Step_SysCommand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
