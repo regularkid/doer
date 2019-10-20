@@ -129,6 +129,7 @@
     <ClCompile Include="Source\Console.cpp" />
     <ClCompile Include="Source\GlobalHotKey.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Step.cpp" />
     <ClCompile Include="Source\Steps\Step_Output.cpp" />
     <ClCompile Include="Source\Steps\Step_SysCommand.cpp" />
   </ItemGroup>

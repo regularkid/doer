@@ -1,5 +1,10 @@
+#include <algorithm>
 #include <fstream>
+#include <functional>
 #include <iostream>
+#include <sstream>
+#include <iterator>
+#include <unordered_map>
 #include "Command.h"
 #include "Steps/Step_Output.h"
 #include "Steps/Step_SysCommand.h"
@@ -8,7 +13,7 @@ Command::Command(const std::experimental::filesystem::path& path)
 	: m_path(path)
 {
 	m_name = path.stem().string();
-	std::transform(m_name.begin(), m_name.end(), m_name.begin(), std::tolower);
+	std::transform(m_name.begin(), m_name.end(), m_name.begin(), ::tolower);
 
 	Load();
 }
@@ -26,7 +31,7 @@ void Command::Load()
 		if (line.empty())
 			continue;
 
-		std::transform(line.begin(), line.end(), line.begin(), std::tolower);
+		std::transform(line.begin(), line.end(), line.begin(), ::tolower);
 
 		AddStep(line);
 	}
@@ -48,13 +53,29 @@ const std::string& Command::GetName() const
 
 void Command::AddStep(const std::string& step)
 {
-	// Todo: generalize this
-	if (step.find("output") == 0)
+	// Super simple factory
+#define CREATE_STEP(className) [](const std::vector<std::string>& params) -> std::unique_ptr<##className> \
+	{ return std::make_unique<##className>(params); }
+
+	using createStepFunc = std::function<std::unique_ptr<Step>(const std::vector<std::string>& params)>;
+	std::unordered_map<std::string, createStepFunc> createStepFuncs =
 	{
-		m_steps.push_back(std::make_unique<Step_Output>(step.substr(7, std::string::npos)));
-	}
-	else if (step.find("syscommand") == 0)
+		{"output", CREATE_STEP(Step_Output)},
+		{"syscommand", CREATE_STEP(Step_SysCommand)},
+	};
+
+#undef CREATE_STEP
+
+	// Parse line: first word = step name, remainder are params
+	std::istringstream iss(step);
+	std::vector<std::string> params(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
+	std::string stepName = params.front();
+	params.erase(params.begin());
+
+	// Create step from factory
+	const auto& itr = createStepFuncs.find(stepName);
+	if (itr != createStepFuncs.end())
 	{
-		m_steps.push_back(std::make_unique<Step_SysCommand>(step.substr(11, std::string::npos)));
+		m_steps.push_back(itr->second(params));
 	}
 }

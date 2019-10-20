@@ -5,13 +5,10 @@
 class Step_SysCommand : public Step
 {
 public:
+	Step_SysCommand(const std::vector<std::string>& params);
 	Step_SysCommand() = delete;
-	Step_SysCommand(const std::string& command)
-		: m_command(command)
-	{}
 
 	void Run() override;
 
 private:
-	std::string m_command;
 };
