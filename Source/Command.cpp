@@ -6,6 +6,7 @@
 #include <iterator>
 #include <unordered_map>
 #include "Command.h"
+#include "Steps/Step_Hide.h"
 #include "Steps/Step_Output.h"
 #include "Steps/Step_SysCommand.h"
 
@@ -60,6 +61,7 @@ void Command::AddStep(const std::string& step)
 	using createStepFunc = std::function<std::unique_ptr<Step>(const std::vector<std::string>& params)>;
 	std::unordered_map<std::string, createStepFunc> createStepFuncs =
 	{
+		{"hide", CREATE_STEP(Step_Hide)},
 		{"output", CREATE_STEP(Step_Output)},
 		{"syscommand", CREATE_STEP(Step_SysCommand)},
 	};
